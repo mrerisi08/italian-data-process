@@ -1,0 +1,4 @@
+999 means NaN -- it wasn't measured
+
+5/20 11:30 AM, in binary?.py, features trigger the "elseCase" condition which ofc is bad. it doesnt show up in the original data.
+It returns "OBESITY" twice in the whole column which should have been converted to 1 in binary?.py, not sure what the problem is
