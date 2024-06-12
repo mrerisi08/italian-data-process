@@ -60,6 +60,7 @@ param = {
 bst = xgb.train(param, dtrain, 350, eval_list, early_stopping_rounds=1000)
 preds_val = bst.predict(dtest, iteration_range=(0, bst.best_iteration + 1))
 auc_val = auc(y_test, preds_val)
+preds_val = np.round(preds_val)
 acc_val = 100 * np.sum(preds_val == y_test) / len(y_test)
 print(auc_val)
 print(acc_val)
