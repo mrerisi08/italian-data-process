@@ -18,9 +18,16 @@ for col in df.drop(["Min Diastolic","Max Diastolic","Mean Diastolic","Min Systol
             ones += 1
             continue
     if ones < 10:
-        print(col, zeros, ones)
+        # print(col, zeros, ones)
         less10.append(col)
 
 print(less10)
 df = df.drop(less10, axis=1)
-df.to_csv("Case I 6-12 binary ft >10 positives.csv")
+
+# normalization:
+for col in df[["Min Systolic","Max Systolic","Mean Systolic","Min Diastolic","Max Diastolic","Mean Diastolic","Age"]]:
+    df[col] = df[col]/abs(df[col]).max()
+    print(df[col])
+
+
+df.to_csv("Case I 6-12 binary ft >10 positives and normalized.csv")
