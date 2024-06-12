@@ -4,6 +4,7 @@ import xgboost as xgb
 import random
 import os
 from sklearn.metrics import roc_auc_score as auc
+import shap
 
 
 def seed_everything(seed):
@@ -17,6 +18,9 @@ seed_everything(42)
 # process and load to numpy
 df = pd.read_csv("Case I 6-12 binary ft >10 positives and normalized.csv")
 df = df.drop("Unnamed: 0", axis=1)
+
+df = df.drop("GLYCATED HEMOGLOBIN", axis=1)
+
 X = df.drop("LABEL", axis=1).to_numpy()
 y = df["LABEL"].to_numpy()
 
@@ -57,10 +61,20 @@ param = {
     "nthread": 8
 }
 
-bst = xgb.train(param, dtrain, 350, eval_list, early_stopping_rounds=1000)
+bst = xgb.train(param, dtrain, 400, eval_list, early_stopping_rounds=1000)
 preds_val = bst.predict(dtest, iteration_range=(0, bst.best_iteration + 1))
 auc_val = auc(y_test, preds_val)
+print(preds_val)
 preds_val = np.round(preds_val)
 acc_val = 100 * np.sum(preds_val == y_test) / len(y_test)
 print(auc_val)
 print(acc_val)
+
+model = bst.best_iteration
+print(type(model))
+print(model)
+explainer = shap.Explainer(bst, feature_names=list(df.drop("LABEL", axis=1).columns))
+Xd = xgb.DMatrix(X, label=y)
+explanation = explainer(X_train)
+shap.plots.beeswarm(explanation)
+
