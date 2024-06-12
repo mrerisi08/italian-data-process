@@ -80,6 +80,7 @@ def binary2():
     global df
     for x in df.drop(["Min Diastolic","Max Diastolic","Mean Diastolic","Min Systolic","Max Systolic","Mean Systolic","Age","Gender","LABEL"],axis=1):
         df[x] = df[x].where(df[x] == 0, 1)
+    df["Gender"] = df["Gender"].where(df["Gender"] == 1, 0)
 def tally(inp):
     out = {}
     for x in inp:
