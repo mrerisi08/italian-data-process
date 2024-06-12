@@ -119,4 +119,11 @@ def nans_from_999s():
         df[x] = df[x].where(df[x] != 999, np.nan)
 nans_from_999s()
 
+
+real_names = ['EXENATIDE','GLIBENCHLAMIDE','GLICLAZIDE','GLIMEPIRIDE','INSULIN ASPART','INSULIN GLARGINE','INSULIN GLULISIN','LISPRO INSULIN','LINAGLIPTIN','METFORMIN','METFORMIN AND LINAGLIPTIN','METFORMIN AND SITAGLIPTIN','METFORMIN AND SULFONILUREAS','METFORMIN AND EMPAGLIFLOZIN','PIOGLITAZONE','REPAGLINIDE']
+for x in range(1, 17):
+    df.rename(columns={f'only Case I_{x} (my edit)':real_names[x-1]}, inplace=True)
+
+df.rename(columns={"only Case I":'ACARBOSE'}, inplace=True)
+
 df.to_csv("Processed_Case1_6-6.csv")
