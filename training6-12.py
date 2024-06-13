@@ -1,3 +1,5 @@
+# with potential data leak
+
 import pandas as pd
 import numpy as np
 import xgboost as xgb
@@ -72,7 +74,16 @@ acc_val = 100 * np.sum(preds_val == y_test) / len(y_test)
 print(auc_val)
 print(acc_val)
 
-print(bst.get_score(importance_type='weight'))
+ft_imp = bst.get_score(importance_type='weight')
+print(ft_imp)
+maximp = 0
+maxft = ""
+for a in ft_imp:
+    if ft_imp[a] > maximp:
+        maximp = ft_imp[a]
+        maxft = a
+print(maximp, maxft)
+
 explainer = shap.Explainer(bst, feature_names=list(df.drop("LABEL", axis=1).columns))
 Xd = xgb.DMatrix(X, label=y)
 explanation = explainer(X_train)
