@@ -36,6 +36,8 @@ numTrain = round(len(y) * (1 - test_percent))  # not actually relevant
 X_test, y_test = X[:numTest], y[:numTest]
 X_train, y_train = X[numTest:], y[numTest:]
 
+# get ft names
+
 # DMatrices
 dtrain = xgb.DMatrix(X_train, label=y_train)
 dtest = xgb.DMatrix(X_test, label=y_test)
@@ -70,9 +72,7 @@ acc_val = 100 * np.sum(preds_val == y_test) / len(y_test)
 print(auc_val)
 print(acc_val)
 
-model = bst.best_iteration
-print(type(model))
-print(model)
+print(bst.get_score(importance_type='weight'))
 explainer = shap.Explainer(bst, feature_names=list(df.drop("LABEL", axis=1).columns))
 Xd = xgb.DMatrix(X, label=y)
 explanation = explainer(X_train)
