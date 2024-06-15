@@ -21,6 +21,7 @@ seed_everything(42)
 # process and load to numpy
 df = pd.read_csv("Case I 6-12 binary ft >10 positives and normalized.csv")
 df = df.drop("Unnamed: 0", axis=1)
+print(len(list(df.columns)))
 
 df = df.drop("GLYCATED HEMOGLOBIN", axis=1)
 
@@ -54,7 +55,6 @@ for j in range(k):
         y_train = [*y[:start]]
         X_test = X[start:]
         y_test = y[start:]
-
     dtrain = xgb.DMatrix(X_train, label=y_train)
     dtest = xgb.DMatrix(X_test, label=y_test)
     eval_list = [(dtrain, 'train'), (dtest, 'eval')]
@@ -84,8 +84,8 @@ for j in range(k):
     explainer = shap.Explainer(bst)
     shap_values = explainer(X_train)
     SHAPS.append(shap_values)
-    gainImp.append(bst.get_score(importance_type='gain'))
-    print(bst.get_score(importance_type='gain'))
+    gainImp.append(bst.get_score(importance_type='weight'))
+    print(bst.get_score(importance_type='weight'))
 
 
 auc_val = auc(y, all_preds)
@@ -115,9 +115,11 @@ for x in gainImpOut:
 
 
 
-impDf = pd.DataFrame(gainImpOut)
+impDf = pd.DataFrame(gainImpOut).transpose()
+impDf["count"] = impDf.notna().sum(axis=1)
+impDf["sum"] = impDf["0"]
 print(impDf)
-impDf.to_csv("weight_ft_imp_by_k-fold.csv")
+# impDf.to_csv("weight_ft_imp_by_k-fold.csv")
 
 # shap.plots.beeswarm(SHAPS)
 
