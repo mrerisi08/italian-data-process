@@ -72,7 +72,7 @@ for j in range(k):
         # "tree_method": "gpu_hist",  # use "exact" on small data THE GPU PART THROWS AN ERROR
         "tree_method": "exact",
         "alpha": 0.01,  # 0.01
-        "gamma": 0.1,  # 0.1
+        "gamma": 10,  # 0.1
         "lambda": 0.01,  # 0.01
         "scale_pos_weight": 1,
         "nthread": 8
@@ -115,10 +115,10 @@ for x in gainImpOut:
 
 
 
-impDf = pd.DataFrame(gainImpOut).transpose()
-impDf["count"] = impDf.notna().sum(axis=1)
-impDf["sum"] = impDf["0"]
-print(impDf)
+# impDf = pd.DataFrame(gainImpOut).transpose()
+# impDf["count"] = impDf.notna().sum(axis=1)
+# impDf["sum"] = impDf["0"]
+# print(impDf)
 # impDf.to_csv("weight_ft_imp_by_k-fold.csv")
 
 # shap.plots.beeswarm(SHAPS)
