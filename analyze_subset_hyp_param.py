@@ -8,8 +8,9 @@ df = df.drop([
             "min_child_weight", "silent","objective","colsamp_bytree","tree_method"
             ], axis=1)
 
-print(df.nlargest(10, "AUC"))
-print(df.nlargest(10, "ACC"))
+print(df.nlargest(1, "AUC")[["max_depth", "gamma", "lambda","scale_pos_weight","alpha","eta"]])
+
+# print(df.nlargest(10, "ACC"))
 
 
 # plt.scatter(df["scale_pos_weight"], df["AUC"], c=df["ACC"], alpha=0.5)
@@ -26,11 +27,11 @@ print(df.nlargest(10, "ACC"))
 # fig2.show()
 # plt.show()
 
-for a in list(df.columns)[2:]:
-    print(a)
-    fig, ax = plt.subplots()
-    ax.scatter(df[a], df["AUC"], c=df["ACC"], alpha=0.5)  # darker = lower, lighter = higher
-    ax.set_title(a)
-    fig.show()
-    fig.savefig(f"plots for hyp param subsets/{a}_plot.png")
-plt.show()
+# for a in list(df.columns)[2:]:
+#     print(a)
+#     fig, ax = plt.subplots()
+#     ax.scatter(df[a], df["AUC"], c=df["ACC"], alpha=0.5)  # darker = lower, lighter = higher
+#     ax.set_title(a)
+#     fig.show()
+#     fig.savefig(f"plots for hyp param subsets/{a}_plot.png")
+# plt.show()
