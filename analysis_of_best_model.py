@@ -126,6 +126,9 @@ combined_expected_value = np.mean(expected_values)
 shap_exp = shap.Explanation(values=shap_vals, base_values=combined_expected_value, data=X,feature_names=list(df.columns))
 
 
+shap.plots.beeswarm(shap_exp) # displays it
+# shap.plots.beeswarm(shap_exp, show=False,max_display=25)
+# plt.savefig("extended_features.png",bbox_inches="tight")
+# ^^ will not display it but will save to the file. bbox_inches makes everything fit properly
 
-shap.plots.beeswarm(shap_exp)
 
