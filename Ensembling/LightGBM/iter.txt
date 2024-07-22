@@ -1,0 +1,5 @@
+6669 / 50000
+3274.679293 seconds since start 54.58 minutes, 0.9096 hours
+0.269339 seconds since last 10
+0.491 average time per model (for 6669 models)
+0.977761 best AUC overall achieved
