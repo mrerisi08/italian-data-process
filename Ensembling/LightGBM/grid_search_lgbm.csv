@@ -1,0 +1,1 @@
+auc, verbosity, objective, 'metric', 'num_threads', 'eta', 'max_leaf', 'min_data', 'feature_fraction', 'reg_alpha', 'lambda', 'min_split_gain', 'max_bin'
