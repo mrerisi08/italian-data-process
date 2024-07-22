@@ -27,7 +27,8 @@ param_ranges = {"eta": [0.001, 0.01, 0.1, 0.5],
                 "verbosity": -1,
                 "max_bin": [100, 255, 500],
                 "objective": "binary",
-                "metric": "auc"
+                "metric": "auc",
+                "num_threads": 5
                 }
 
 lengths = [len(param_ranges[x]) for x in param_ranges if type(param_ranges[x]) == type([])]
