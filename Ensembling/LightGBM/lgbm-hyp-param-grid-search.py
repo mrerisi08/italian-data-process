@@ -1,6 +1,7 @@
 import random
 import os
 import numpy as np
+import itertools
 
 
 def seed_everything(seed):
@@ -31,6 +32,18 @@ param_ranges = {"eta": [0.001, 0.01, 0.1, 0.5],
                 "num_threads": 5
                 }
 
-lengths = [len(param_ranges[x]) for x in param_ranges if type(param_ranges[x]) == type([])]
-print(lengths)
-print(np.prod(lengths))
+
+constant_hyperparams = {k: v for k, v in param_ranges.items() if not isinstance(v, list)}
+list_hyperparams = {k: v for k, v in param_ranges.items() if isinstance(v, list)}
+
+# Generate all combinations of list hyperparameters
+list_keys = list(list_hyperparams.keys())
+list_values = list(list_hyperparams.values())
+combinations = list(itertools.product(*list_values))
+final_hyperparams = []
+for combination in combinations:
+    config = constant_hyperparams.copy()
+    config.update(zip(list_keys, combination))
+    final_hyperparams.append(config)
+for idx, config in enumerate(final_hyperparams):
+    print(f"Configuration {idx + 1}: {config}")
