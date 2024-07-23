@@ -171,7 +171,7 @@ def grid_search_param():
                     "max_bin": [100, 255, 500],
                     "objective": "binary",
                     "metric": "auc",
-                    "num_threads": 5
+                    "num_threads": 9
                     }
 
     constant_hyperparams = {k: v for k, v in param_ranges.items() if not isinstance(v, list)}
