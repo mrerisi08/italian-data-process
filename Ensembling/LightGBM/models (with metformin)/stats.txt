@@ -1,2 +1,2 @@
-0.9919192834138486 is AUC for these plots
+0.9906038647342996 is AUC for these plots
 "lgbm-best-shap.png" is the SHAP plot for these models

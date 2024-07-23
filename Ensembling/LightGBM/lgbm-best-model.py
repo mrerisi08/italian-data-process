@@ -12,6 +12,11 @@ import requests
 import itertools
 import pickle as pkl
 
+def seed_everything(seed):
+    random.seed(seed)
+    os.environ['PYTHONASSEED'] = str(seed)
+    np.random.seed(seed)
+seed_everything(64)
 
 df = pd.read_csv("../../Case I 6-12 binary ft >10 positives and normalized.csv", na_values=np.nan)
 df = df.drop(["Unnamed: 0", "GLYCATED HEMOGLOBIN"], axis=1)
