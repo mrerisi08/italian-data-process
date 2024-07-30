@@ -146,16 +146,16 @@ y = y[p]
 K_FOLDS = 5
 fold_size = int(len(X) / K_FOLDS)
 
-B_A_T_AUC = -1
-scr = open("lgb_basic_data.csv",'r')
-scr = scr.readlines()[1:]
-all_time_aucs = []
-for a in scr:
-    a = a.split(",")[0]
-    a = np.float64(a)
-    if a > B_A_T_AUC:
-        B_A_T_AUC = a
-print(B_A_T_AUC)
+# B_A_T_AUC = -1
+# scr = open("lgb_basic_data.csv",'r')
+# scr = scr.readlines()[1:]
+# all_time_aucs = []
+# for a in scr:
+#     a = a.split(",")[0]
+#     a = np.float64(a)
+#     if a > B_A_T_AUC:
+#         B_A_T_AUC = a
+# print(B_A_T_AUC)
 # for some stupid reason param = {"num_leaves":31, "objective":"binary","metric":"auc"} is the best.
 
 
@@ -190,6 +190,13 @@ def grid_search_param():
 
 HYPERPARAMETERS = grid_search_param()
 
+
+FOLD_ARRAYS = {}
+for fold in range(4):
+    start = fold * fold_size
+    end = (fold + 1) * fold_size
+    FOLD_ARRAYS[fold] = ([*X[:start], *X[end:]],[*y[:start], *y[end:]],X[start:end],y[start:end])
+
 AUCs = []
 ITERS = 0
 total_amt_of_iterations = len(HYPERPARAMETERS)
@@ -198,7 +205,7 @@ B_A_T_AUC = -1
 overall_start = time.time()
 for param in HYPERPARAMETERS:
     ITERS += 1
-    if ITERS % 1 == 0:
+    if ITERS % 100 == 0:
         file = open("iter.txt", "w")
         start_dist = time.time()-overall_start
         it = (f"{ITERS} / {total_amt_of_iterations}\n"
@@ -215,19 +222,7 @@ for param in HYPERPARAMETERS:
     all_preds = []
 
     for fold in range(K_FOLDS):
-        start = fold * fold_size
-        end = (fold + 1) * fold_size
-        print(fold, start, end)
-        if fold != 4:
-            X_train = [*X[:start], *X[:end]]
-            y_train = [*y[:start], *y[:end]]
-            X_test = X[start:end]
-            y_test = y[start:end]
-        else:
-            X_train = X[:start]
-            y_train = y[:start]
-            X_test = X[start:]
-            y_test = y[start:]
+        X_train, y_train, X_test, y_test = FOLD_ARRAYS[fold]
 
         X_train = np.array(X_train)
         y_train = np.array(y_train)

@@ -129,7 +129,7 @@ y = y[p]
 
 K_FOLDS = 5
 fold_size = int(len(X) / K_FOLDS)
-params = [{'verbosity':-1, 'objective':"binary", 'metric':"auc",
+params = [{'objective':"binary", 'metric':"auc",  'verbosity':-1,
            'num_threads':9, 'eta':0.1, 'max_leaf':50,
            'min_data':5, 'feature_fraction':0.75, 'reg_alpha':0,
            'lambda':0, 'min_split_gain':0, 'max_bin':100,"seed":64}]
@@ -143,8 +143,8 @@ for param in params:
         end = (fold + 1) * fold_size
         # print(fold, start, end)
         if fold != 4:
-            X_train = [*X[:start], *X[:end]]
-            y_train = [*y[:start], *y[:end]]
+            X_train = [*X[:start], *X[end:]]
+            y_train = [*y[:start], *y[end:]]
             X_test = X[start:end]
             y_test = y[start:end]
         else:
@@ -153,8 +153,11 @@ for param in params:
             X_test = X[start:]
             y_test = y[start:]
 
+
         X_train = np.array(X_train)
         y_train = np.array(y_train)
+        print(X_train.shape)
+        print(y_train.shape)
         train_data = lgb.Dataset(X_train, label=y_train, feature_name=list(datadf.columns),
                                  categorical_feature=BINARY_FT)
 
@@ -162,9 +165,11 @@ for param in params:
 
         preds = bst.predict(X_test)
         all_preds += list(preds)
+        # print([round(float(x),4) for x in preds])
         explainer = shap.Explainer(bst)
         shap_values = explainer(X_test)
         CONTRIB.append(shap_values)
+        print(fold, auc(y_test, preds))
         # with open(f'models (with metformin)/bst_mdl{fold}.pkl', 'wb') as file:
         #     pkl.dump(bst, file)
     auc_val = auc(y, all_preds)
@@ -174,14 +179,11 @@ for param in params:
     combined_base_values = np.concatenate([sv.base_values for sv in CONTRIB], axis=0)
     combined_data = np.concatenate([sv.data for sv in CONTRIB], axis=0)
 
-    # Create a SHAP values object for the combined data
     combined_shap_values_obj = shap.Explanation(values=combined_shap_values,
                                                 base_values=combined_base_values,
                                                 data=combined_data,
                                                 feature_names=list(df.columns))
 
-    # Generate the bee swarm plot
-    shap.plots.beeswarm(combined_shap_values_obj, show=False, max_display=20)
-    plt.savefig("lgbm-shap.png",bbox_inches="tight")
-    # Show the plot
-    # plt.show()
+    # shap.plots.beeswarm(combined_shap_values_obj, show=False, max_display=20)
+    # plt.savefig("lgbm-shap.png",bbox_inches="tight")
+

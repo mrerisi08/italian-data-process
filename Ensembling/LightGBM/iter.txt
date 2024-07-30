@@ -1,5 +1,5 @@
-11 / 144000
-5 seconds since start 0.08 minutes, 0.0014 hours
-0.377667 seconds since last 10
-0.452 average time per model (for 11 models)
+15 / 144000
+5 seconds since start 0.09 minutes, 0.0015 hours
+0.495795 seconds since last 10
+0.352 average time per model (for 15 models)
 0.866655 best AUC overall achieved
