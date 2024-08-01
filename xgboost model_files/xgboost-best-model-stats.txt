@@ -1,0 +1,21 @@
+PARAM = {
+        "max_depth": 4,
+        "eta": 0.298855629,
+        "subsample": 1,
+        "colsample_bytree": 1,
+        "colsample_bylevel": 1,
+        "min_child_weight": 5,
+        "silent": 1,
+        "objective": "binary:logistic",
+        "eval_metric": "auc",
+        "tree_method": "exact",
+        "alpha": 0.209002515,
+        "gamma": 7.464987507779308,
+        "lambda": 0.631963664,
+        "scale_pos_weight": 8.429048193,
+        "nthread": 8,
+        "verbosity": 0,
+        "num_parallel_tree": 1
+    }
+
+AUC - 0.910253623188406

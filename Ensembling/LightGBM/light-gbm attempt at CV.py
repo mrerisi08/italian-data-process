@@ -15,7 +15,7 @@ def seed_everything(seed):
     random.seed(seed)
     os.environ['PYTHONASSEED'] = str(seed)
     np.random.seed(seed)
-seed_everything(42)
+seed_everything(177)
 
 def send_ifttt_notification(message):
     url = f"https://maker.ifttt.com/trigger/python_notif_tester/with/key/cUlA4Bn82wLJshLLMLQwBt"
@@ -168,7 +168,7 @@ def grid_search_param():
                     "lambda": [0.0, 0.01, 1, 5, 25],
                     "min_split_gain": [0, 50, 100, 250],
                     "verbosity": -1,
-                    "max_bin": [100, 255, 500],
+                    "max_bin": 2553,
                     "objective": "binary",
                     "metric": "auc",
                     "num_threads": 9
@@ -186,25 +186,33 @@ def grid_search_param():
         config = constant_hyperparams.copy()
         config.update(zip(list_keys, combination))
         final_hyperparams.append(config)
+
+    final_hyperparams = list(zip(list(range(len(final_hyperparams))),final_hyperparams))
     return final_hyperparams
 
 HYPERPARAMETERS = grid_search_param()
-
+CONST_HYP_CT = len(HYPERPARAMETERS)
+HYPERPARAMETERS = HYPERPARAMETERS[:45000]
 
 FOLD_ARRAYS = {}
 for fold in range(4):
     start = fold * fold_size
     end = (fold + 1) * fold_size
     FOLD_ARRAYS[fold] = ([*X[:start], *X[end:]],[*y[:start], *y[end:]],X[start:end],y[start:end])
+start = 4*fold_size
+end = 5*fold_size
+FOLD_ARRAYS[4] = ([*X[:start], *X[end:]],[*y[:start], *y[end:]],X[start:],y[start:])
+
 
 AUCs = []
-ITERS = 0
-total_amt_of_iterations = len(HYPERPARAMETERS)
+total_amt_of_iterations = 45000
 last_tick = time.time()
 B_A_T_AUC = -1
 overall_start = time.time()
-for param in HYPERPARAMETERS:
-    ITERS += 1
+for ITERS, param in HYPERPARAMETERS:
+    starting_time = time.time()
+    if ITERS == 0:
+        ITERS = 1
     if ITERS % 100 == 0:
         file = open("iter.txt", "w")
         start_dist = time.time()-overall_start
@@ -212,12 +220,13 @@ for param in HYPERPARAMETERS:
               f"{start_dist:.0f} seconds since start {start_dist/60:.2f} minutes, {start_dist/3600:.4f} hours\n"
               f"{time.time()-last_tick:.6f} seconds since last 10\n"
               f"{(time.time()-overall_start)/ITERS:.3f} average time per model (for {ITERS} models)\n"
-              f"{B_A_T_AUC:.6f} best AUC overall achieved")
+              f"{B_A_T_AUC:.6f} best AUC overall achieved\n"
+              f"Estim time remaining: {((time.time()-overall_start)/ITERS)*(total_amt_of_iterations-ITERS)/3600:.3f} hrs")
         file.write(it)
         file.close()
         last_tick = time.time()
     if ITERS % 500 == 0:
-        send_ifttt_notification(f"{ITERS} / {total_amt_of_iterations} best AUC is {B_A_T_AUC}. Estim time remaining: {((time.time()-overall_start)/ITERS)*(total_amt_of_iterations-ITERS)/3600:.3f} hrs")
+        send_ifttt_notification(f"MAC: {ITERS} / {total_amt_of_iterations} best AUC is {B_A_T_AUC}. Estim time remaining: {((time.time()-overall_start)/ITERS)*(total_amt_of_iterations-ITERS)/3600:.3f} hrs")
 
     all_preds = []
 
@@ -235,10 +244,10 @@ for param in HYPERPARAMETERS:
         all_preds += list(preds)
 
     auc_val = auc(y, all_preds)
-    print(auc_val)
+    print(ITERS, auc_val)
     AUCs.append(auc_val)
-    with open("grid_search_lgbm.csv","a") as file:
-        str = f"\n{auc_val}"
+    with open("grid_search_lgbm-take-2-that-works.csv","a") as file:
+        str = f"\n{ITERS},{auc_val},{time.time()-starting_time}"
         for val in param:
             str = f"{str},{param[val]}"
         file.write(str)

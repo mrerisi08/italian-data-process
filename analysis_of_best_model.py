@@ -92,15 +92,15 @@ for j in range(k):
         y_train = [*y[:start]]
         X_test = X[start:]
         y_test = y[start:]
-    # dtrain = xgb.DMatrix(X_train, label=y_train)
+    dtrain = xgb.DMatrix(X_train, label=y_train)
     dtest = xgb.DMatrix(X_test, label=y_test)
-    # eval_list = [(dtrain, 'train'), (dtest, 'eval')]
+    eval_list = [(dtrain, 'train'), (dtest, 'eval')]
     #
-    # param = PARAM
+    param = PARAM
     #
-    # bst = xgb.train(param, dtrain, 500, eval_list, early_stopping_rounds=1000)
-    with open(f'model_files/bst_mdl{j}.pkl', 'rb') as file:
-        bst = pickle.load(file)
+    bst = xgb.train(param, dtrain, 500, eval_list, early_stopping_rounds=1000)
+    # with open(f'model_files/bst_mdl{j}.pkl', 'rb') as file:
+    #     bst = pickle.load(file)
     preds_val = bst.predict(dtest, iteration_range=(0, bst.best_iteration + 1))
     all_preds += list(preds_val)
     contribs = bst.predict(dtest, pred_contribs=True)

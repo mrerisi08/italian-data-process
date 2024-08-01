@@ -16,7 +16,7 @@ def seed_everything(seed):
     random.seed(seed)
     os.environ['PYTHONASSEED'] = str(seed)
     np.random.seed(seed)
-seed_everything(64)
+seed_everything(42)
 
 df = pd.read_csv("../../Case I 6-12 binary ft >10 positives and normalized.csv", na_values=np.nan)
 df = df.drop(["Unnamed: 0", "GLYCATED HEMOGLOBIN"], axis=1)
@@ -130,9 +130,9 @@ y = y[p]
 K_FOLDS = 5
 fold_size = int(len(X) / K_FOLDS)
 params = [{'objective':"binary", 'metric':"auc",  'verbosity':-1,
-           'num_threads':9, 'eta':0.1, 'max_leaf':50,
-           'min_data':5, 'feature_fraction':0.75, 'reg_alpha':0,
-           'lambda':0, 'min_split_gain':0, 'max_bin':100,"seed":64}]
+           'num_threads':9, 'eta':0.1, 'max_leaf':10,
+           'min_data':5, 'feature_fraction':0.25, 'reg_alpha':1,
+           'lambda':0, 'min_split_gain':0, 'max_bin':255,"seed":64}]
 
 for param in params:
     all_preds = []
@@ -184,6 +184,6 @@ for param in params:
                                                 data=combined_data,
                                                 feature_names=list(df.columns))
 
-    # shap.plots.beeswarm(combined_shap_values_obj, show=False, max_display=20)
-    # plt.savefig("lgbm-shap.png",bbox_inches="tight")
+    shap.plots.beeswarm(combined_shap_values_obj, show=False, max_display=20)
+    plt.savefig("lgbm-shap.png",bbox_inches="tight")
 

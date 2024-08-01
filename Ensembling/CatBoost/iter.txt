@@ -1,0 +1,4 @@
+1260 / 1260
+best auc: 0.8992230273752012
+time elapsed: 5.405 hrs
+estim remaining: 0.000 hrs
