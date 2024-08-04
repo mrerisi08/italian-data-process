@@ -184,6 +184,6 @@ for param in params:
                                                 data=combined_data,
                                                 feature_names=list(df.columns))
 
-    shap.plots.beeswarm(combined_shap_values_obj, show=False, max_display=20)
-    plt.savefig("lgbm-shap.png",bbox_inches="tight")
+    # shap.plots.beeswarm(combined_shap_values_obj, show=False, max_display=20)
+    # plt.savefig("lgbm-shap.png",bbox_inches="tight")
 
