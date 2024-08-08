@@ -46,9 +46,9 @@ PARAMS = {
 
 BINARY_FT = list(df.drop(["LABEL","MinDiastolic","MaxDiastolic","MeanDiastolic","MinSystolic","MaxSystolic","MeanSystolic", "Age"], axis=1).columns)
 
-PREDICTIONS = {"lgb": [], "xgb": [], "cat": []}
+PREDICTIONS = {"lgb": [], "xgb": [], "cat": [], "all": []}
 
-AUC_VALS = {"lgb": {}, "xgb": {}, "cat": {}}
+AUC_VALS = {"lgb": {}, "xgb": {}, "cat": {}, "all": {}}
 
 for j in range(5):
     print(j)
@@ -58,7 +58,7 @@ for j in range(5):
         X_train, X_test = [*X[:start], *X[end:]], X[start:end]
         y_train, y_test = [*y[:start], *y[end:]], y[start:end]
     else:
-        X_train, x_test = X[:start], X[start:]
+        X_train, X_test = X[:start], X[start:]
         y_train, y_test = y[:start], y[start:]
 
     # lgb train
@@ -66,34 +66,60 @@ for j in range(5):
     lgb_y_train = np.array(y_train)
     lgb_train_data = lgb.Dataset(lgb_X_train, label=lgb_y_train, feature_name=list(df.drop("LABEL", axis=1).columns), categorical_feature=BINARY_FT)
     lgb_mdl = lgb.train(PARAMS["lgb"], lgb_train_data)
+    print("lgb trained")
 
     # xgb train
     xgb_dtrain = xgb.DMatrix(X_train, label=y_train)
     xgb_dtest = xgb.DMatrix(X_test, label=y_test)
     xgb_eval_list = [(xgb_dtrain, 'train'), (xgb_dtest, 'eval')]
-    xgb_mdl = xgb.train(PARAMS["xgb"], xgb_dtrain, 500, early_stopping_rounds=1000) # removed arg that contained xgb_eval_list
+    xgb_mdl = xgb.train(PARAMS["xgb"], xgb_dtrain, 500) # removed arg that contained xgb_eval_list
+    print("xgb trained")
 
     # cat train
     cat_mdl = CatBoostClassifier(**PARAMS["cat"], eval_metric='AUC')
     cat_mdl.fit(X_train, y_train)
+    print("cat trained")
+
+    # save to pickles
+    with open(f'models/lgb/lgb_{j}.pkl', 'wb') as file:
+        pkl.dump(lgb_mdl, file)
+    with open(f'models/xgb/xgb_{j}.pkl', 'wb') as file:
+        pkl.dump(xgb_mdl, file)
+    with open(f'models/cat/cat_{j}.pkl', 'wb') as file:
+        pkl.dump(cat_mdl, file)
+    print("pickled")
 
     # preds
     lgb_pred = list(lgb_mdl.predict(X_test))
-    xgb_pred = list(xgb_mdl.predict(X_test))
+    print("lgb pred")
+    xgb_pred = list(xgb_mdl.predict(xgb_dtest))
+    print("xgb pred")
     cat_pred = list(np.rot90(cat_mdl.predict_proba(X_test))[0])
+    print("cat pred")
+    all_pred = list(np.mean(np.array([lgb_pred, xgb_pred, cat_pred]), axis=0))
+    print("all pred")
 
     PREDICTIONS["lgb"] += lgb_pred
     PREDICTIONS["xgb"] += xgb_pred
     PREDICTIONS["cat"] += cat_pred
+    PREDICTIONS["all"] += all_pred
+
 
     # sub aucs
     AUC_VALS["lgb"][j] = auc(y_test, lgb_pred)
+    print("lgb auc")
     AUC_VALS["xgb"][j] = auc(y_test, xgb_pred)
+    print("xgb auc")
     AUC_VALS["cat"][j] = auc(y_test, cat_pred)
+    print("cat auc")
+    AUC_VALS["all"][j] = auc(y_test, all_pred)
+    print("all auc")
 
+print("done with all folds")
 
 AUC_VALS["lgb"]["all"] = auc(y, PREDICTIONS["lgb"])
 AUC_VALS["xgb"]["all"] = auc(y, PREDICTIONS["xgb"])
 AUC_VALS["cat"]["all"] = auc(y, PREDICTIONS["cat"])
+AUC_VALS["all"]["all"] = auc(y, PREDICTIONS["all"])
 
 print(AUC_VALS)

@@ -39,3 +39,10 @@ seed_everything(42)
         "nthread": 8,
         "verbosity": 0,
         "num_parallel_tree": 1}
+
+
+on seed 42, all running in parallel on definitely the same train/tests:
+mdl all_auc            avg_auc
+lgb 0.8962510064412238 0.9005920506043978
+xgb 0.8993880837359098 0.9032587284765334
+cat 0.8988667471819646 0.9038728872805623
